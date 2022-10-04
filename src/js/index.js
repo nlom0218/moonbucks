@@ -4,6 +4,7 @@ function App() {
   // form 태그가 자동으로 전송되는 걸 막아준다.
   $("#espresso-menu-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    $("#espresso-menu-name").value === "";
   });
 
   // 메뉴의 이름을 입력
@@ -33,6 +34,11 @@ function App() {
         "beforeend",
         menuItemTemplate(espressMenuName)
       );
+
+      // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
+      const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+      console.log($("#espresso-menu-list").querySelectorAll("li"));
+      $(".menu-count").innerText = `총 ${menuCount}개`;
     }
   });
 }
