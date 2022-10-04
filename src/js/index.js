@@ -6,15 +6,13 @@ function App() {
     e.preventDefault();
   });
 
-  // 메뉴의 이름을 입력
-  $("#espresso-menu-name").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      const espressMenuName = $("#espresso-menu-name").value;
-      if (espressMenuName === "") {
-        return window.alert("값을 입력해주세요.");
-      }
-      const menuItemTemplate = (name) => {
-        return `
+  const addMenu = () => {
+    const espressMenuName = $("#espresso-menu-name").value;
+    if (espressMenuName === "") {
+      return window.alert("값을 입력해주세요.");
+    }
+    const menuItemTemplate = (name) => {
+      return `
           <li class="menu-list-item d-flex items-center py-2">
             <span class="w-100 pl-2 menu-name">${name}</span>
             <button
@@ -31,17 +29,27 @@ function App() {
             </button>
           </li>
         `;
-      };
-      $("#espresso-menu-list").insertAdjacentHTML(
-        "beforeend",
-        menuItemTemplate(espressMenuName)
-      );
+    };
+    $("#espresso-menu-list").insertAdjacentHTML(
+      "beforeend",
+      menuItemTemplate(espressMenuName)
+    );
 
-      // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
-      const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-      $(".menu-count").innerText = `총 ${menuCount}개`;
+    // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
+    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    $(".menu-count").innerText = `총 ${menuCount}개`;
 
-      $("#espresso-menu-name").value = "";
+    $("#espresso-menu-name").value = "";
+  };
+
+  $("#espresso-menu-submit-button").addEventListener("click", () => {
+    addMenu();
+  });
+
+  // 메뉴의 이름을 입력
+  $("#espresso-menu-name").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      addMenu();
     }
   });
 }
