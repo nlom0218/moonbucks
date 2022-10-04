@@ -4,13 +4,15 @@ function App() {
   // form 태그가 자동으로 전송되는 걸 막아준다.
   $("#espresso-menu-form").addEventListener("submit", (e) => {
     e.preventDefault();
-    $("#espresso-menu-name").value === "";
   });
 
   // 메뉴의 이름을 입력
   $("#espresso-menu-name").addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       const espressMenuName = $("#espresso-menu-name").value;
+      if (espressMenuName === "") {
+        return window.alert("값을 입력해주세요.");
+      }
       const menuItemTemplate = (name) => {
         return `
           <li class="menu-list-item d-flex items-center py-2">
@@ -37,8 +39,9 @@ function App() {
 
       // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
       const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-      console.log($("#espresso-menu-list").querySelectorAll("li"));
       $(".menu-count").innerText = `총 ${menuCount}개`;
+
+      $("#espresso-menu-name").value = "";
     }
   });
 }
