@@ -1,6 +1,13 @@
 const $ = (selector) => document.querySelector(selector);
 
 function App() {
+  // 보통 함수의 이름의 앞에 동사를 쓴다.
+  const updateMenuCount = () => {
+    // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
+    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    $(".menu-count").innerText = `총 ${menuCount}개`;
+  };
+
   $("#espresso-menu-list").addEventListener("click", (e) => {
     if (e.target.classList.contains("menu-edit-button")) {
       // 중복된 것을 하나로
@@ -10,6 +17,12 @@ function App() {
         $menuName.innerText
       );
       $menuName.innerText = updatedMenuName;
+    }
+    if (e.target.classList.contains("menu-remove-button")) {
+      if (confirm("정말 삭제하시겠습니까?")) {
+        e.target.closest("li").remove();
+        updateMenuCount();
+      }
     }
   });
 
@@ -47,9 +60,7 @@ function App() {
       menuItemTemplate(espressMenuName)
     );
 
-    // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-    $(".menu-count").innerText = `총 ${menuCount}개`;
+    updateMenuCount();
 
     $("#espresso-menu-name").value = "";
   };
