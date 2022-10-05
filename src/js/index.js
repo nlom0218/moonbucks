@@ -1,6 +1,19 @@
 const $ = (selector) => document.querySelector(selector);
 
+const store = {
+  setLocalStroage(menu) {
+    localStorage.setItem("menu", JSON.stringify(menu));
+  },
+  getLocalStorage() {
+    return JSON.parse(localStorage.getItem("menu"));
+  },
+};
+
 function App() {
+  // 상태는 변하는 데이터, 이 앱에서 변하는 것이 무엇인가?, 복잡하지 않게 하기 위해 최소한으로 생각해야 한다.
+  // 상태 -> 메뉴명
+  this.menu = [];
+
   // 리펙토링 -> 나중에 봐도 어떤 동작을 하는지 알 수 있도록 함수를 만들어 쓰자.
 
   // 보통 함수의 이름의 앞에 동사를 쓴다.
@@ -15,10 +28,14 @@ function App() {
     if (espressMenuName === "") {
       return window.alert("값을 입력해주세요.");
     }
-    const menuItemTemplate = (name) => {
-      return `
+
+    this.menu.push({ name: espressMenuName });
+    store.setLocalStroage(this.menu);
+    const template = this.menu
+      .map((item) => {
+        return `
           <li class="menu-list-item d-flex items-center py-2">
-            <span class="w-100 pl-2 menu-name">${name}</span>
+            <span class="w-100 pl-2 menu-name">${item.name}</span>
             <button
               type="button"
               class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -33,11 +50,10 @@ function App() {
             </button>
           </li>
         `;
-    };
-    $("#espresso-menu-list").insertAdjacentHTML(
-      "beforeend",
-      menuItemTemplate(espressMenuName)
-    );
+      })
+      .join("");
+
+    $("#espresso-menu-list").innerHTML = template;
 
     updateMenuCount();
 
@@ -82,4 +98,4 @@ function App() {
   });
 }
 
-App();
+const app = new App();
