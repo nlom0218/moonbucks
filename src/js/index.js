@@ -12,6 +12,8 @@ const store = {
 function App() {
   // 상태는 변하는 데이터, 이 앱에서 변하는 것이 무엇인가?, 복잡하지 않게 하기 위해 최소한으로 생각해야 한다.
   // 상태 -> 메뉴명
+
+  // 상태를 초기화 하는 이유는 어떤 형태의 데이터로 관리를 할 것인지를 명확하게 해준다.
   this.menu = [];
 
   // 리펙토링 -> 나중에 봐도 어떤 동작을 하는지 알 수 있도록 함수를 만들어 쓰자.
@@ -32,9 +34,9 @@ function App() {
     this.menu.push({ name: espressMenuName });
     store.setLocalStroage(this.menu);
     const template = this.menu
-      .map((item) => {
+      .map((item, index) => {
         return `
-          <li class="menu-list-item d-flex items-center py-2">
+          <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
             <span class="w-100 pl-2 menu-name">${item.name}</span>
             <button
               type="button"
@@ -61,9 +63,14 @@ function App() {
   };
 
   const updateMenuName = (e) => {
+    const menuId = e.target.closest("li").dataset.menuId;
     // 중복된 것을 하나로
     const $menuName = e.target.closest("li").querySelector(".menu-name");
     const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
+    this.menu[menuId].name = updatedMenuName;
+    // 데이터의 상태를 관리하는 것은 최소한으로 하는 것이 좋다. 역할을 분명하게 부여하자.
+    // 하나의 함수에선 딱 하나의 기능을 할 수 있도록 하자.
+    store.setLocalStroage(this.menu);
     $menuName.innerText = updatedMenuName;
   };
 
