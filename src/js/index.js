@@ -1,6 +1,8 @@
 const $ = (selector) => document.querySelector(selector);
 
 function App() {
+  // 리펙토링 -> 나중에 봐도 어떤 동작을 하는지 알 수 있도록 함수를 만들어 쓰자.
+
   // 보통 함수의 이름의 앞에 동사를 쓴다.
   const updateMenuCount = () => {
     // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
@@ -8,30 +10,7 @@ function App() {
     $(".menu-count").innerText = `총 ${menuCount}개`;
   };
 
-  $("#espresso-menu-list").addEventListener("click", (e) => {
-    if (e.target.classList.contains("menu-edit-button")) {
-      // 중복된 것을 하나로
-      const $menuName = e.target.closest("li").querySelector(".menu-name");
-      const updatedMenuName = prompt(
-        "메뉴명을 수정하세요",
-        $menuName.innerText
-      );
-      $menuName.innerText = updatedMenuName;
-    }
-    if (e.target.classList.contains("menu-remove-button")) {
-      if (confirm("정말 삭제하시겠습니까?")) {
-        e.target.closest("li").remove();
-        updateMenuCount();
-      }
-    }
-  });
-
-  // form 태그가 자동으로 전송되는 걸 막아준다.
-  $("#espresso-menu-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-  });
-
-  const addMenu = () => {
+  const addMenuName = () => {
     const espressMenuName = $("#espresso-menu-name").value;
     if (espressMenuName === "") {
       return window.alert("값을 입력해주세요.");
@@ -65,14 +44,40 @@ function App() {
     $("#espresso-menu-name").value = "";
   };
 
-  $("#espresso-menu-submit-button").addEventListener("click", () => {
-    addMenu();
+  const updateMenuName = (e) => {
+    // 중복된 것을 하나로
+    const $menuName = e.target.closest("li").querySelector(".menu-name");
+    const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
+    $menuName.innerText = updatedMenuName;
+  };
+
+  const removeMenuName = (e) => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      e.target.closest("li").remove();
+      updateMenuCount();
+    }
+  };
+
+  $("#espresso-menu-list").addEventListener("click", (e) => {
+    if (e.target.classList.contains("menu-edit-button")) {
+      updateMenuName(e);
+    }
+    if (e.target.classList.contains("menu-remove-button")) {
+      removeMenuName(e);
+    }
   });
+
+  // form 태그가 자동으로 전송되는 걸 막아준다.
+  $("#espresso-menu-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+  });
+
+  $("#espresso-menu-submit-button").addEventListener("click", addMenuName);
 
   // 메뉴의 이름을 입력
   $("#espresso-menu-name").addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
-      addMenu();
+      addMenuName();
     }
   });
 }
