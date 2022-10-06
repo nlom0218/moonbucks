@@ -15,24 +15,14 @@ function App() {
 
   // 상태를 초기화 하는 이유는 어떤 형태의 데이터로 관리를 할 것인지를 명확하게 해준다.
   this.menu = [];
-
-  // 리펙토링 -> 나중에 봐도 어떤 동작을 하는지 알 수 있도록 함수를 만들어 쓰자.
-
-  // 보통 함수의 이름의 앞에 동사를 쓴다.
-  const updateMenuCount = () => {
-    // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-    $(".menu-count").innerText = `총 ${menuCount}개`;
+  this.init = () => {
+    if (store.getLocalStorage().length > 1) {
+      this.menu = store.getLocalStorage();
+      render();
+    }
   };
 
-  const addMenuName = () => {
-    const espressMenuName = $("#espresso-menu-name").value;
-    if (espressMenuName === "") {
-      return window.alert("값을 입력해주세요.");
-    }
-
-    this.menu.push({ name: espressMenuName });
-    store.setLocalStroage(this.menu);
+  const render = () => {
     const template = this.menu
       .map((item, index) => {
         return `
@@ -56,9 +46,26 @@ function App() {
       .join("");
 
     $("#espresso-menu-list").innerHTML = template;
-
     updateMenuCount();
+  };
+  // 리펙토링 -> 나중에 봐도 어떤 동작을 하는지 알수 있도록 함수를 만들어 쓰자.
 
+  // 보통 함수의 이름의 앞에 동사를 쓴다.
+  const updateMenuCount = () => {
+    // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
+    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    $(".menu-count").innerText = `총 ${menuCount}개`;
+  };
+
+  const addMenuName = () => {
+    const espressMenuName = $("#espresso-menu-name").value;
+    if (espressMenuName === "") {
+      return window.alert("값을 입력해주세요.");
+    }
+
+    this.menu.push({ name: espressMenuName });
+    store.setLocalStroage(this.menu);
+    render();
     $("#espresso-menu-name").value = "";
   };
 
@@ -110,3 +117,4 @@ function App() {
 }
 
 const app = new App();
+app.init();
