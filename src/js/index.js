@@ -5,7 +5,7 @@ const store = {
     localStorage.setItem("menu", JSON.stringify(menu));
   },
   getLocalStorage() {
-    return JSON.parse(localStorage.getItem("menu"));
+    return JSON.parse(localStorage.getItem("menu")) || [];
   },
 };
 
@@ -16,7 +16,7 @@ function App() {
   // 상태를 초기화 하는 이유는 어떤 형태의 데이터로 관리를 할 것인지를 명확하게 해준다.
   this.menu = [];
   this.init = () => {
-    if (store.getLocalStorage().length > 1) {
+    if (store.getLocalStorage().length > 0) {
       this.menu = store.getLocalStorage();
       render();
     }
@@ -24,9 +24,9 @@ function App() {
 
   const render = () => {
     const template = this.menu
-      .map((item, index) => {
+      .map((item) => {
         return `
-          <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
+          <li data-menu-id="${item.id}" class="menu-list-item d-flex items-center py-2">
             <span class="w-100 pl-2 menu-name">${item.name}</span>
             <button
               type="button"
@@ -62,30 +62,35 @@ function App() {
     if (espressMenuName === "") {
       return window.alert("값을 입력해주세요.");
     }
+    const id = Number(new Date());
 
-    this.menu.push({ name: espressMenuName });
+    this.menu.push({ name: espressMenuName, id });
     store.setLocalStroage(this.menu);
     render();
     $("#espresso-menu-name").value = "";
   };
 
-  const updateMenuName = (e) => {
+  const findMenuIndex = (e) => {
     const menuId = e.target.closest("li").dataset.menuId;
+    return this.menu.findIndex((item) => item.id === Number(menuId));
+  };
+
+  const updateMenuName = (e) => {
     // 중복된 것을 하나로
     const $menuName = e.target.closest("li").querySelector(".menu-name");
     const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
-    this.menu[menuId].name = updatedMenuName;
-    // 데이터의 상태를 관리하는 것은 최소한으로 하는 것이 좋다. 역할을 분명하게 부여하자.
-    // 하나의 함수에선 딱 하나의 기능을 할 수 있도록 하자.
-    store.setLocalStroage(this.menu);
-    $menuName.innerText = updatedMenuName;
+    if (updatedMenuName && updatedMenuName !== "") {
+      this.menu[findMenuIndex(e)].name = updatedMenuName;
+      // 데이터의 상태를 관리하는 것은 최소한으로 하는 것이 좋다. 역할을 분명하게 부여하자.
+      // 하나의 함수에선 딱 하나의 기능을 할 수 있도록 하자.
+      store.setLocalStroage(this.menu);
+      $menuName.innerText = updatedMenuName;
+    }
   };
 
   const removeMenuName = (e) => {
     if (confirm("정말 삭제하시겠습니까?")) {
-      const menuId = e.target.closest("li").dataset.menuId;
-      this.menu.splice(menuId, 1);
-      // this.menu = this.menu.filter((_, index) => index !== Number(menuId));
+      this.menu.splice(findMenuIndex(e), 1);
       store.setLocalStroage(this.menu);
       e.target.closest("li").remove();
       updateMenuCount();
