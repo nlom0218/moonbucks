@@ -72,13 +72,13 @@ function App() {
     $(".menu-count").innerText = `총 ${menuCount}개`;
   };
 
-  const addMenuName = () => {
+  const addMenuName = async () => {
     const menuName = $("#menu-name").value;
     if (menuName === "") {
       return window.alert("값을 입력해주세요.");
     }
 
-    fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
+    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,13 +86,17 @@ function App() {
       body: JSON.stringify({
         name: menuName,
       }),
+    }).then((res) => res.json());
+
+    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
+      method: "GET",
     })
       .then((res) => res.json())
-      .then((data) => console.log(data));
-    // this.menu[this.currentCategory].push({ name: menuName });
-    store.setLocalStroage(this.menu);
-    render();
-    $("#menu-name").value = "";
+      .then((data) => {
+        this.menu[this.currentCategory] = data;
+        render();
+        $("#menu-name").value = "";
+      });
   };
 
   const updateMenuName = (e) => {
