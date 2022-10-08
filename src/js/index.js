@@ -6,15 +6,19 @@ const BASE_URL = "http://localhost:3000/api";
 
 const MenuApi = {
   getAllMenuByCategory: async (category) => {
-    // return await fetch(`${BASE_URL}/category/${category}/menu`, {
-    //   method: "GET",
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     return data;
-    //   });
     const res = await fetch(`${BASE_URL}/category/${category}/menu`);
     return res.json();
+  },
+
+  creaetMenu: async (category, name) => {
+    const res = await fetch(`${BASE_URL}/category/${category}/menu`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    if (!res.ok) {
+      console.error("에러가 발생했습니다.");
+    }
   },
 };
 
@@ -36,7 +40,6 @@ function App() {
 
   // 상태관리를 위해 초기화를 하자
   this.init = async () => {
-    console.log(await MenuApi.getAllMenuByCategory(this.currentCategory));
     this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
       this.currentCategory
     );
@@ -87,21 +90,13 @@ function App() {
     $(".menu-count").innerText = `총 ${menuCount}개`;
   };
 
-  const addMenuName = async () => {
+  const addMenu = async () => {
     const menuName = $("#menu-name").value;
     if (menuName === "") {
       return window.alert("값을 입력해주세요.");
     }
 
-    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: menuName,
-      }),
-    }).then((res) => res.json());
+    await MenuApi.creaetMenu(this.currentCategory, menuName);
 
     this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
       this.currentCategory
@@ -164,23 +159,26 @@ function App() {
       e.preventDefault();
     });
 
-    $("#menu-submit-button").addEventListener("click", addMenuName);
+    $("#menu-submit-button").addEventListener("click", addMenu);
 
     // 메뉴의 이름을 입력
     $("#menu-name").addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
-        addMenuName();
+        addMenu();
       }
     });
 
     // 메뉴 관리
-    $("nav").addEventListener("click", (e) => {
+    $("nav").addEventListener("click", async (e) => {
       const isCategoryButton =
         e.target.classList.contains("cafe-category-name");
       if (isCategoryButton) {
         const categoryName = e.target.dataset.categoryName;
         this.currentCategory = categoryName;
         $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
+        this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+          this.currentCategory
+        );
         render();
       }
     });
