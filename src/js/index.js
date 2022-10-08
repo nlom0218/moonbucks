@@ -4,6 +4,20 @@ import { store } from "./store/index.js";
 // 기본 주소를 설정하여 이후에 주소가 바뀌더라도 수정이 편할 수 있도록 한다.
 const BASE_URL = "http://localhost:3000/api";
 
+const MenuApi = {
+  getAllMenuByCategory: async (category) => {
+    // return await fetch(`${BASE_URL}/category/${category}/menu`, {
+    //   method: "GET",
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     return data;
+    //   });
+    const res = await fetch(`${BASE_URL}/category/${category}/menu`);
+    return res.json();
+  },
+};
+
 function App() {
   // 상태는 변하는 데이터, 이 앱에서 변하는 것이 무엇인가?, 복잡하지 않게 하기 위해 최소한으로 생각해야 한다.
   // 상태 -> 메뉴명
@@ -21,10 +35,11 @@ function App() {
   this.currentCategory = "espresso";
 
   // 상태관리를 위해 초기화를 하자
-  this.init = () => {
-    if (store.getLocalStorage()) {
-      this.menu = store.getLocalStorage();
-    }
+  this.init = async () => {
+    console.log(await MenuApi.getAllMenuByCategory(this.currentCategory));
+    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+      this.currentCategory
+    );
     render();
     initEventListeners();
   };
@@ -88,15 +103,11 @@ function App() {
       }),
     }).then((res) => res.json());
 
-    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        this.menu[this.currentCategory] = data;
-        render();
-        $("#menu-name").value = "";
-      });
+    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+      this.currentCategory
+    );
+    render();
+    $("#menu-name").value = "";
   };
 
   const updateMenuName = (e) => {
