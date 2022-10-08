@@ -113,23 +113,23 @@ function App() {
     render();
   };
 
-  $("#menu-list").addEventListener("click", (e) => {
-    if (e.target.classList.contains("menu-edit-button")) {
-      updateMenuName(e);
-      // 뒷 부분을 체크하지 않을 땐 return를 함으로써 불필요한 연산을 하지 않도록 하자.
-      return;
-    }
-    if (e.target.classList.contains("menu-remove-button")) {
-      removeMenuName(e);
-      return;
-    }
-    if (e.target.classList.contains("menu-sold-out-button")) {
-      soldOutMenu(e);
-      return;
-    }
-  });
-
   const initEventListeners = () => {
+    $("#menu-list").addEventListener("click", (e) => {
+      if (e.target.classList.contains("menu-edit-button")) {
+        updateMenuName(e);
+        // 뒷 부분을 체크하지 않을 땐 return를 함으로써 불필요한 연산을 하지 않도록 하자.
+        return;
+      }
+      if (e.target.classList.contains("menu-remove-button")) {
+        removeMenuName(e);
+        return;
+      }
+      if (e.target.classList.contains("menu-sold-out-button")) {
+        soldOutMenu(e);
+        return;
+      }
+    });
+
     // form 태그가 자동으로 전송되는 걸 막아준다.
     $("#menu-form").addEventListener("submit", (e) => {
       e.preventDefault();
