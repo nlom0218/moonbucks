@@ -7,6 +7,7 @@ function App() {
 
   // 상태를 초기화 하는 이유는 어떤 형태의 데이터로 관리를 할 것인지를 명확하게 해준다.
   // 상태가 변하는 값들은 this로 관리한다.
+  this.menu = [];
   this.currentCategory = "espresso";
 
   // 상태관리를 위해 초기화를 하자
@@ -16,8 +17,8 @@ function App() {
   };
 
   const render = async () => {
-    const menu = await MenuApi.getAllMenuByCategory(this.currentCategory);
-    const template = menu
+    this.menu = await MenuApi.getAllMenuByCategory(this.currentCategory);
+    const template = this.menu
       .map((item) => {
         return `
           <li data-menu-id="${
@@ -57,8 +58,7 @@ function App() {
   // 보통 함수의 이름의 앞에 동사를 쓴다.
   const updateMenuCount = async () => {
     // 클래스명, 아이디명을 활용하여 변수 이름을 정하자.
-    const menu = await await MenuApi.getAllMenuByCategory(this.currentCategory);
-    const menuCount = menu.length;
+    const menuCount = this.menu.length;
     $(".menu-count").innerText = `총 ${menuCount}개`;
   };
 
@@ -66,6 +66,12 @@ function App() {
     const menuName = $("#menu-name").value;
     if (menuName === "") {
       return window.alert("값을 입력해주세요.");
+    }
+
+    if (this.menu.find((item) => item.name === menuName)) {
+      window.alert("이미 등록된 메뉴입니다. 다시 입력해주세요.");
+      $("#menu-name").value = "";
+      return;
     }
 
     await MenuApi.creaetMenu(this.currentCategory, menuName);
